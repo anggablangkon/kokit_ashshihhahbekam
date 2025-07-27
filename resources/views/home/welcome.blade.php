@@ -5,7 +5,7 @@
 
         <!-- Background Pattern -->
        <div class="position-absolute top-0 start-50 translate-middle-x mt-5 mb-5">
-    <img src="{{ asset('tema/assets/images/bg-pattern.png') }}" alt="">
+    <img src="{{ asset('tema/assets/images/bg-pattern.png') }}" alt="" class="w-100">
 </div>
 
         <div class="container pt-5 position-relative pb-5">
