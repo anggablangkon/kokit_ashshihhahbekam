@@ -4,9 +4,9 @@
 <section class="bg-light bg-opacity-50 border-top border-light position-relative">
 
         <!-- Background Pattern -->
-        <div class="position-absolute top-0 start-50 translate-middle-x mt-5 mb-5">
-            <img src="{{asset('tema/assets/images/bg-pattern.png')}}" alt="">
-        </div>
+       <div class="position-absolute top-0 start-50 translate-middle-x mt-5 mb-5">
+    <img src="{{ asset('tema/assets/images/bg-pattern.png') }}" alt="">
+</div>
 
         <div class="container pt-5 position-relative pb-5">
             <!-- Hero Content Row -->
