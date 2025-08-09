@@ -5,7 +5,7 @@
     <form method="POST" action="{{ route('login') }}" class="bg-white shadow-lg  p-4 rounded-lg">
         @csrf
 
-        <img class="text-center rounded-lg mx-auto" src="{{ asset('tema/assets/images/bsi.jpg') }}" alt="logo"
+        <img class="text-center rounded-lg mx-auto" src="{{ asset('internal/assets/logo.png') }}" alt="logo"
             width="100">
 
         <!-- Email Address -->

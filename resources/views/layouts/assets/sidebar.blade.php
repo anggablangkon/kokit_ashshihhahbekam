@@ -22,7 +22,7 @@
                     <div>
                         <a href="pages-profile.html" class="link-reset d-flex align-items-center">
                             <img src="{{ asset('tema/assets/images/bsi.jpg') }}" alt="user-image"
-                                class="rounded-circle me-2 avatar-md">
+                            class="rounded-circle me-2 avatar-md">
                             
                             <div class="d-flex flex-column">
                                 <span class="sidenav-user-name fw-bold">{{ Auth::user()->name }}</span>
@@ -42,12 +42,18 @@
                         <span class="menu-text" data-lang="dashboard">Dashboard</span>
                     </a>
                 </li>
-                <!-- <li class="side-nav-item">
-            <a href="landing.html" target="_blank" class="side-nav-link">
-                <span class="menu-icon"><i class="ti ti-stack-front"></i></span>
-                <span class="menu-text" data-lang="landing-page">Landing Page</span>
-            </a>
-        </li> -->
+                <li class="side-nav-item">
+                    <a href="{{ url('/admin/Kukumpul') }}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-layout-dashboard"></i></span>
+                        <span class="menu-text" data-lang="dashboard">Kukumpul</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{{ url('/admin/bank') }}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-layout-dashboard"></i></span>
+                        <span class="menu-text" data-lang="dashboard">Bank</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
