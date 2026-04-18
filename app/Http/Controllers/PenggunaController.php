@@ -22,22 +22,22 @@ class PenggunaController extends Controller
     public function index()
     {
         $testimonis = Testimonial::all();
-        $total = Kukumpul::where('status', 'sukses')->sum('rupiah');
-        return view('home.welcome', compact('testimonis','total'));
-        
+        return view('home.landingpage', compact('testimonis'));
     }
 
-    public function profil(){
+    public function profil()
+    {
         return view('home.profil');
     }
 
-    public function teknis(){
+    public function teknis()
+    {
         return view('home.teknis');
     }
 
     public function store(Request $request)
     {
-        
+
         try {
             // Sanitasi nomor HP
             $nohp    = preg_replace('/\D/', '', $request->nohp);
@@ -81,14 +81,13 @@ class PenggunaController extends Controller
             ### notifikasi wa
             $data['invoice'] = $invoice;
             $data['rupiah']  = $rupiah_final;
-            $response = $this->notificationService->MessageSend($request, $data); 
+            $response = $this->notificationService->MessageSend($request, $data);
 
             return response()->json([
                 'status'   => true,
                 'message'  => 'Kontribusi berhasil disimpan.',
                 'redirect' => route('pembayaran.index', ['invoice' => $invoice]),
             ]);
-
         } catch (\Exception $e) {
             // Tangkap error dan kirim respon gagal
             return response()->json([
@@ -99,13 +98,10 @@ class PenggunaController extends Controller
     }
 
 
-    public function pembayaran($invoice){
+    public function pembayaran($invoice)
+    {
         $banks = MasterBank::all();
         $data = Kukumpul::where('invoice', $invoice)->firstOrFail();
-        return view('home.pembayaran', compact('data','banks'));
-
+        return view('home.pembayaran', compact('data', 'banks'));
     }
-
-
-    
 }
