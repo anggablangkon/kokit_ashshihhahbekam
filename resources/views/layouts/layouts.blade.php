@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Btech">
@@ -16,6 +17,8 @@
     <link href="{{ asset('tema/assets/css/vendors.min.css') }}" rel="stylesheet" type="text/css">
     <!-- App css -->
     <link href="{{ asset('tema/assets/css/app.min.css') }}" rel="stylesheet" type="text/css">
+    <!-- Daterangepicker Plugin CSS -->
+    <link rel="stylesheet" href="{{ asset('tema/assets/plugins/daterangepicker/daterangepicker.css')}}" type="text/css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('css')
 
@@ -54,13 +57,19 @@
     <!-- Dashboard 2 Page js -->
     <!-- <script src="{{ asset('tema/assets/js/pages/dashboard-2.js') }}"></script> -->
 
+    <!-- Daterangepicker Plugin Js -->
+    <script src="{{ asset('tema/assets/plugins/moment/moment.min.js')}}"></script>
+    <script src="{{ asset('tema/assets/plugins/daterangepicker/daterangepicker.js')}}"></script>
+    <script src="{{ asset('tema/assets/js/pages/form-date-range-picker.js')}}"></script>
+
     {{-- datatables --}}
     <script src="{{ asset('tema/assets/plugins/datatables/dataTables.min.js') }}"></script>
     <script src="{{ asset('tema/assets/plugins/datatables/dataTables.bootstrap5.min.js') }}"></script>
     <script src="{{ asset('tema/assets/plugins/datatables/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('tema/assets/plugins/datatables/responsive.bootstrap5.min.js') }}"></script>
     <script src="{{ asset('tema/assets/js/pages/datatables-scroll.js') }}"></script>
-
+    <script src="{{ asset('internal/js/helper/global.js?v='.date('His')) }}"></script>
+    
     @yield('js')
     @stack('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

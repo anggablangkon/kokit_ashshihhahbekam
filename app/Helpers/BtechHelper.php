@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 function rupiah($angka)
 {
-    return 'Rp ' . number_format($angka, 0, ',', '.');
+    return 'Rp,' . number_format($angka, 0, ',', '.');
 }
 function angka($angka)
 {

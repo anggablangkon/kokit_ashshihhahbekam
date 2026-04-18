@@ -2,10 +2,10 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}" class="bg-white shadow-lg  p-4 rounded-lg">
+    <form method="POST" action="{{ route('login') }}" class="bg-white shadow  p-4 rounded-lg">
         @csrf
 
-        <img class="text-center rounded-lg mx-auto" src="{{ asset('internal/assets/logo.png') }}" alt="logo"
+        <img class="text-center rounded-lg mx-auto" src="{{ asset('internal/assets/logoix.png') }}" alt="logo"
             width="100">
 
         <!-- Email Address -->
@@ -46,15 +46,6 @@
             </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
         </div>
 
         <div class="flex items-center justify-end mt-4">

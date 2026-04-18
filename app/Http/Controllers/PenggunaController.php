@@ -5,13 +5,25 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Kukumpul;
 use App\Models\MasterBank;
+use App\Models\Testimonial;
+use App\Services\notificationService;
+
 
 class PenggunaController extends Controller
 {
 
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function index()
     {
-        return view('home.welcome');
+        $testimonis = Testimonial::all();
+        $total = Kukumpul::where('status', 'sukses')->sum('rupiah');
+        return view('home.welcome', compact('testimonis','total'));
         
     }
 
@@ -25,6 +37,7 @@ class PenggunaController extends Controller
 
     public function store(Request $request)
     {
+        
         try {
             // Sanitasi nomor HP
             $nohp    = preg_replace('/\D/', '', $request->nohp);
@@ -64,6 +77,11 @@ class PenggunaController extends Controller
                 'provinsi_id' => $request->domisili,
                 'tanggal'     => now(),
             ]);
+
+            ### notifikasi wa
+            $data['invoice'] = $invoice;
+            $data['rupiah']  = $rupiah_final;
+            $response = $this->notificationService->MessageSend($request, $data); 
 
             return response()->json([
                 'status'   => true,

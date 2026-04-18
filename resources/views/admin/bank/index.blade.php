@@ -6,14 +6,7 @@
 
     <div class="page-title-head d-flex align-items-center">
         <div class="flex-grow-1">
-            <h4 class="fs-sm text-uppercase fw-bold m-0">Dashboard</h4>
-        </div>
-
-        <div class="text-end">
-            <ol class="breadcrumb m-0 py-0">
-                <li class="breadcrumb-item"><a href="javascript: void(0);">Sistem</a></li>
-                <li class="breadcrumb-item active">Dashboard</li>
-            </ol>
+            <h4 class="fs-sm text-uppercase fw-bold m-0">Bank</h4>
         </div>
     </div>
 
@@ -25,7 +18,7 @@
                     <h4 class="card-title mb-0">List Data</h4>
                     <div class="d-flex gap-2">
                         <a data-bs-toggle="modal" data-bs-target="#modalAddBank" class="btn btn-sm btn-secondary">
-                            <i class="ti ti-plus me-1"></i> Tambah Data
+                            <i class="ti ti-plus me-1"></i> Tambah Bank
                         </a>
                     </div>
                 </div>
@@ -38,7 +31,7 @@
                                 <div class="card-header border-light justify-content-between">
                                     <div class="d-flex gap-2">
                                         <div class="app-search">
-                                            <input data-table-search type="search" class="form-control" placeholder="Search product name...">
+                                            <input data-table-search type="search" class="form-control" placeholder="Cari data">
                                             <i data-lucide="search" class="app-search-icon text-muted"></i>
                                         </div>
                                         <button data-table-delete-selected class="btn btn-danger d-none">Delete</button>
@@ -68,101 +61,103 @@
                                         </thead>
                                         <tbody>
                                             @forelse($obj['banks'] as $index => $bank)
-                                            <tr>
-                                                <td class="ps-3">{{ $index + 1 }}</td>
-                                                <td>{{ $bank->bank_name }}</td>
-                                                <td>{{ $bank->account_number }}</td>
-                                                <td>{{ $bank->account_holder }}</td>
-                                                <td class="text-center">
-                                                    <!-- Tombol Edit -->
-                                                    <button class="btn btn-sm btn-warning" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#modalEditBank{{ $bank->id }}">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
+                                                <tr>
+                                                    <td class="ps-3">{{ $index + 1 }}</td>
+                                                    <td>{{ $bank->bank_name }}</td>
+                                                    <td>{{ $bank->account_number }}</td>
+                                                    <td>{{ $bank->account_holder }}</td>
+                                                    <td class="text-center">
+                                                        <div class="d-flex justify-content-center gap-1">
+                                                            <!-- Tombol Edit -->
+                                                            <button class="btn btn-info btn-icon btn-sm rounded-circle" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#modalEditBank{{ $bank->id }}">
+                                                            <i class="ti ti-edit fs-lg"></i>
+                                                            </button>
 
-                                                <!-- Tombol Delete -->
-                                                <form action="{{ route('bank.destroy', $bank->id) }}" 
-                                                  method="POST" 
-                                                  style="display:inline-block"
-                                                  onsubmit="return confirm('Hapus data bank ini?')">
-                                                  @csrf
-                                                  @method('DELETE')
-                                                  <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                                            <!-- Tombol Delete -->
+                                                            <form action="{{ route('bank.destroy', $bank->id) }}" 
+                                                              method="POST" 
+                                                              style="display:inline-block"
+                                                              onsubmit="return confirm('Hapus data bank ini?')">
+                                                              @csrf
+                                                              @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-icon btn-sm rounded-circle">
+                                                                    <i class="ti ti-trash fs-lg"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
 
-                                    {{-- Modal Edit --}}
-                                    <div class="modal fade" id="modalEditBank{{ $bank->id }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                                            <div class="modal-content animated fadeIn">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Edit Data Bank</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                {{-- Modal Edit --}}
+                                                <div class="modal fade" id="modalEditBank{{ $bank->id }}" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                                                        <div class="modal-content animated fadeIn">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Edit Data Bank</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <form method="POST" autocomplete="off" action="{{ route('bank.update', $bank->id) }}">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Nama Bank</label>
+                                                                        <input type="text" name="bank_name" value="{{ $bank->bank_name }}" class="form-control" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Nomor Rekening</label>
+                                                                        <input type="text" name="account_number" value="{{ $bank->account_number }}" class="form-control" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Nama Pemilik Rekening</label>
+                                                                        <input type="text" name="account_holder" value="{{ $bank->account_holder }}" class="form-control" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <input type="hidden" name="token" value="{{encrypt($bank->id)}}">
+                                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <form method="POST" autocomplete="off" action="{{ route('bank.update', $bank->id) }}">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Nama Bank</label>
-                                                            <input type="text" name="bank_name" value="{{ $bank->bank_name }}" class="form-control" required>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Nomor Rekening</label>
-                                                            <input type="text" name="account_number" value="{{ $bank->account_number }}" class="form-control" required>
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Nama Pemilik Rekening</label>
-                                                            <input type="text" name="account_holder" value="{{ $bank->account_holder }}" class="form-control" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <input type="hidden" name="token" value="{{encrypt($bank->id)}}">
-                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
+                                            @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center">Tidak ada data bank</td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="card-footer border-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div data-table-pagination-info="products"></div>
+                                        <div data-table-pagination></div>
                                     </div>
-                                    @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center">Tidak ada data bank</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div class="card-footer border-0">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div data-table-pagination-info="products"></div>
-                                <div data-table-pagination></div>
+                                </div>
                             </div>
+                        </div><!-- end col -->
+                    </div><!-- end row -->
+                </div> <!-- end card-body-->
+
+                <div class="card-footer border-0">
+                    <div class="align-items-center justify-content-between row text-center text-sm-start">
+                        <div class="col-sm">
+                            <div data-table-pagination-info="data"></div>
                         </div>
-                    </div>
+                        <div class="col-sm-auto mt-3 mt-sm-0">
+                            <div data-table-pagination></div>
+                        </div> <!-- end col-->
+                    </div> <!-- end row-->
+                </div> <!-- end card-footer-->
+            </div> <!-- end card-->
+        </div> <!-- end col-->
+    </div> <!-- end row-->
 
-                </div><!-- end col -->
-            </div><!-- end row -->
-        </div> <!-- end card-body-->
-
-        <div class="card-footer border-0">
-            <div class="align-items-center justify-content-between row text-center text-sm-start">
-                <div class="col-sm">
-                    <div data-table-pagination-info="data"></div>
-                </div>
-                <div class="col-sm-auto mt-3 mt-sm-0">
-                    <div data-table-pagination></div>
-                </div> <!-- end col-->
-            </div> <!-- end row-->
-        </div> <!-- end card-footer-->
-    </div> <!-- end card-->
-</div> <!-- end col-->
-</div> <!-- end row-->
 </div>
 
 

@@ -16,7 +16,7 @@
 
         <div class="d-flex align-items-center gap-2">
 
-            <!-- Notification Dropdown -->
+            <!-- Notification Dropdown 
             <div class="topbar-item">
                 <div class="dropdown">
                     <button class="topbar-link dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown"
@@ -58,9 +58,7 @@
                                 </span>
                             </div>
 
-                        </div> <!-- end dropdown-->
-
-                        <!-- All-->
+                        </div> 
                         <a href="javascript:void(0);"
                             class="dropdown-item text-center text-reset text-decoration-underline link-offset-2 fw-bold notify-item border-top border-light py-2">
                             View All Alerts
@@ -69,6 +67,7 @@
                     </div>
                 </div>
             </div>
+            -->
 
             <!-- Light/Dark Mode Button -->
             <div class="topbar-item d-none d-sm-flex">
@@ -83,7 +82,7 @@
                 <div class="dropdown">
                     <a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown"
                         data-bs-offset="0,16" href="#!" aria-haspopup="false" aria-expanded="false">
-                        <img src="{{ asset('tema/assets/images/bsi.jpg') }}" width="32"
+                        <img src="{{ asset('internal/assets/logoix.png') }}" width="32"
                             class="rounded-circle me-lg-2 d-flex" alt="user-image">
                         <div class="d-lg-flex align-items-center gap-1 d-none">
                             <h5 class="my-0">{{ Auth::user()->name }}</h5>

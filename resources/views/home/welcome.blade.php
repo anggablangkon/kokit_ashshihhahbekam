@@ -30,7 +30,7 @@
                 <div class="my-4">
                     <div class="bg-light p-4 rounded-4 shadow-sm d-inline-block">
                         <p class="mb-1 text-secondary">Sudah Terkumpul</p>
-                        <h2 class="text-black fw-bold display-5 mb-0">Rp 75.820.000</h2>
+                        <h2 class="text-black fw-bold display-5 mb-0">{{rupiah($total)}}</h2>
                         <b class="text-muted fst-italic">dan terus bertambah 💚</b>
                     </div>
                 </div>
@@ -80,111 +80,36 @@
         <img src="{{asset('tema/assets/images/bg-pattern.png')}}" alt="">
     </div>
 
-    <div class="container position-relative">
+   <div class="container position-relative">
 
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="mt-3 fw-bold mb-5">Apa kata mereka <mark class="fst-italic">tentang</mark> Ku'kumpul</h2>
-            </div>
-        </div>  <!-- end row-->          
+    <div class="row">
+        <div class="col-12 text-center">
+            <h2 class="mt-3 fw-bold mb-5">Apa kata mereka <mark class="fst-italic">tentang</mark> Ku'kumpul</h2>
+        </div>
+    </div>  <!-- end row-->          
 
-        <div class="row justify-content-center">
+    <div class="row justify-content-center">
+        @foreach ($testimonis as $testi)
             <div class="col-lg-4">
-                <div class="card border-light rounded-4 p-3 card-h-100">
+                <div class="card shadow-lg border-light rounded-4 p-3 card-h-100">
                     <div class="card-body pb-0 text-center">
                         <div class="avatar avatar-xl mx-auto mb-3">
-                            <img src="{{asset('tema/assets/images/users/user-1.jpg')}}" alt="Emily Carter" class="img-fluid rounded-circle">
+                            <img src="{{ $testi->foto ? asset($testi->foto) : asset('tema/assets/images/users/user-2.jpg') }}" alt="{{ $testi->nama }}" class="img-fluid rounded-circle">
                         </div>
                         <span class="text-warning fs-lg mb-3 d-block">
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
+                            @for ($i = 0; $i < 5; $i++)
+                                <span class="ti ti-star-filled"></span>
+                            @endfor
                         </span>
-                        <h4 class="mb-2 fs-md">Absolutely love it!</h4>
-                        <p class="text-muted mb-3 fst-italic fs-sm">"This gadget exceeded all my expectations. Sleek design and incredible performance!"</p>
+                        <h4 class="fs-md">{{ $testi->nama }}</h4>
+                        <p class="text-muted mb-3 fst-italic fs-sm">"{{ $testi->pesan }}"</p>
                     </div>
                 </div>
             </div>
+        @endforeach
+    </div> <!-- end row-->
+</div> <!-- end container-->
 
-            <div class="col-lg-4">
-                <div class="card border-light rounded-4 p-3 card-h-100">
-                    <div class="card-body pb-0 text-center">
-                        <div class="avatar avatar-xl mx-auto mb-3">
-                            <img src="{{asset('tema/assets/images/users/user-2.jpg')}}" alt="Michael Zhang" class="img-fluid rounded-circle">
-                        </div>
-                        <span class="text-warning fs-lg mb-3 d-block">
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                        </span>
-                        <h4 class="mb-2 fs-md">Great value for money</h4>
-                        <p class="text-muted mb-3 fst-italic fs-sm">"Sturdy build and long battery life. Would definitely recommend it to friends!"</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card border-light rounded-4 p-3 card-h-100">
-                    <div class="card-body pb-0 text-center">
-                        <div class="avatar avatar-xl mx-auto mb-3">
-                            <img src="{{asset('tema/assets/images/users/user-3.jpg')}}" alt="Sara Lopez" class="img-fluid rounded-circle">
-                        </div>
-                        <span class="text-warning fs-lg mb-3 d-block">
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                        </span>
-                        <h4 class="mb-2 fs-md">Top-notch customer service</h4>
-                        <p class="text-muted mb-3 fst-italic fs-sm">"The team helped me with my issue right away. Smooth experience overall!"</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card border-light rounded-4 p-3 card-h-100">
-                    <div class="card-body pb-0 text-center">
-                        <div class="avatar avatar-xl mx-auto mb-3">
-                            <img src="{{asset('tema/assets/images/users/user-4.jpg')}}" alt="James Whitman" class="img-fluid rounded-circle">
-                        </div>
-                        <span class="text-warning fs-lg mb-3 d-block">
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                        </span>
-                        <h4 class="mb-2 fs-md">Highly impressed</h4>
-                        <p class="text-muted mb-3 fst-italic fs-sm">"The performance and features are unmatched in this price range. Highly impressed!"</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="card border-light rounded-4 p-3 card-h-100">
-                    <div class="card-body pb-0 text-center">
-                        <div class="avatar avatar-xl mx-auto mb-3">
-                            <img src="{{asset('tema/assets/images/users/user-5.jpg')}}" alt="Aisha Khan" class="img-fluid rounded-circle">
-                        </div>
-                        <span class="text-warning fs-lg mb-3 d-block">
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                            <span class="ti ti-star-filled"></span>
-                        </span>
-                        <h4 class="mb-2 fs-md">Smooth experience from start to finish</h4>
-                        <p class="text-muted mb-3 fst-italic fs-sm">"The website, shipping, and support all worked flawlessly. Very satisfied!"</p>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- end row-->
-    </div> <!-- end container-->
 </section>
 
 <!-- Modal -->

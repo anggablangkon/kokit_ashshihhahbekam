@@ -90,7 +90,7 @@
     </div> <!-- end row-->
     <div class="row mt-2">
         <div class="col-12 text-center">
-            <p class="mb-4">🚀 <script>document.write(new Date().getFullYear())</script> Dikembakangkan <span class="fw-semibold">oleh kokitindo.com</span> </p>
+            <p class="mb-4">🚀 <script>document.write(new Date().getFullYear())</script> Dikembangkan <span class="fw-semibold">oleh kokitindo.com</span> </p>
         </div>
     </div> <!-- end row-->
 </div> <!-- end container-->
