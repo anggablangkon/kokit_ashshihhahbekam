@@ -52,6 +52,30 @@
                         <span class="menu-text" data-lang="dashboard">Testimoni</span>
                     </a>
                 </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('patients.index') }}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-user-heart"></i></span>
+                        <span class="menu-text">Pasien</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('treatments.index') }}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-stethoscope"></i></span>
+                        <span class="menu-text">Treatments</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('medical-records.index') }}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-file-description"></i></span>
+                        <span class="menu-text">Rekam Medis</span>
+                    </a>
+                </li>
+                <li class="side-nav-item">
+                    <a href="{{ route('payrolls.index') }}" class="side-nav-link">
+                        <span class="menu-icon"><i class="ti ti-report-money"></i></span>
+                        <span class="menu-text">Payroll</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

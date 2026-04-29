@@ -12,7 +12,7 @@
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full bg-white" type="email" name="email"
-                :value="old('email')" required autofocus autocomplete="username" />
+                :value="old('email')" autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -22,7 +22,7 @@
 
             <div class="relative">
                 <x-text-input id="password" class="block mt-1 w-full pr-10 bg-white" type="password" name="password"
-                    required autocomplete="current-password" />
+                    autocomplete="current-password" />
                 <button type="button" onclick="togglePassword()" tabindex="-1"
                     style="position:absolute;top:50%;right:10px;transform:translateY(-50%);" class="text-gray-500">
                     <span id="icon-eye">

@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MedicalRecordController;
+use App\Http\Controllers\Admin\PatientController;
+use App\Http\Controllers\Admin\PayrollController;
+use App\Http\Controllers\Admin\TreatmentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\MasterbankController;
@@ -25,6 +29,12 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::patch('/kukumpul/{id}/sukses', [KukumpulController::class, 'markSukses'])->name('kukumpul.sukses');
     Route::patch('/kukumpul/{id}/reload', [KukumpulController::class, 'markReload'])->name('kukumpul.reload');
     Route::resource('testimoni', TestimonialController::class);
+    Route::resource('patients', PatientController::class)->except(['create', 'edit', 'show']);
+    Route::resource('treatments', TreatmentController::class)->except(['create', 'edit', 'show']);
+    Route::resource('medical-records', MedicalRecordController::class)->parameters([
+        'medical-records' => 'medicalRecord',
+    ])->except(['create', 'edit', 'show']);
+    Route::resource('payrolls', PayrollController::class)->except(['create', 'edit', 'show']);
 });
 
 
