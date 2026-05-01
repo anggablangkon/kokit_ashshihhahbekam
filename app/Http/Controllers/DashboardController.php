@@ -17,30 +17,34 @@ class DashboardController extends Controller
     }
 
 
-    public function grafikdashboard(){
-
-        $year = now()->year;
-
-        $data = Kukumpul::select(
-            DB::raw('MONTH(created_at) as bulan'),
-            DB::raw('SUM(rupiah) as total')
-        )
-        ->whereYear('created_at', $year)
-        ->where('status', 'sukses')
-        ->groupBy(DB::raw('MONTH(created_at)'))
-        ->pluck('total', 'bulan')
-        ->toArray();
-
-        $labels = [];
-        $grafik = [];
-        for ($i = 0; $i <= 12; $i++) {
-            $labels[] = Carbon::create(null, $i)->locale('id')->translatedFormat('F');
-            $grafik[] = $data[$i] ?? 0;
-        }
-
+    public function grafikdashboard()
+    {
         return response()->json([
-            'labels' => $labels,
-            'data'   => $grafik,
+            "labels" => ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+            "data" => [1200000, 2100000, 1500000, 3000000, 2400000, 4000000, 3500000, 4200000, 4800000, 4500000, 5500000, 6800000],
+
+            "pie_data" => [
+                ["value" => 40, "name" => "Bekam"],
+                ["value" => 30, "name" => "Pijat"],
+                ["value" => 30, "name" => "Lainnya"]
+            ],
+
+            "pasien_data" => [
+                ["value" => 100, "name" => "Aktif"],
+                ["value" => 20, "name" => "Baru"]
+            ],
+
+            "pegawai_data" => [
+                ["value" => 10, "name" => "Terapis"],
+                ["value" => 3, "name" => "Admin"]
+            ],
+
+            "stats" => [
+                "total_omzet" => "Rp 6.800.000",
+                "pasien_baru" => "20",
+                "total_kunjungan" => "120",
+                "estimasi_gaji" => "Rp 1.500.000"
+            ]
         ]);
     }
 
