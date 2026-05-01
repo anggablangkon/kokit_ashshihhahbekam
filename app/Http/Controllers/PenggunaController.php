@@ -6,18 +6,18 @@ use Illuminate\Http\Request;
 use App\Models\Kukumpul;
 use App\Models\MasterBank;
 use App\Models\Testimonial;
-use App\Services\notificationService;
+// use App\Services\notificationService;
 
 
 class PenggunaController extends Controller
 {
 
-    protected $notificationService;
+    // protected $notificationService;
 
-    public function __construct(NotificationService $notificationService)
-    {
-        $this->notificationService = $notificationService;
-    }
+    // public function __construct(NotificationService $notificationService)
+    // {
+    //     $this->notificationService = $notificationService;
+    // }
 
     public function index()
     {
