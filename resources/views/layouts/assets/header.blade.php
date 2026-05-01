@@ -94,7 +94,11 @@
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
-                        <a href="javascript:void(0);" class="dropdown-item text-danger fw-semibold"
+                        <a href="#" class="dropdown-item text-black fw-semibold">
+                            <i class="ti ti-users me-2 fs-17 align-middle"></i>
+                            <span class="align-middle">Profil</span>
+                        </a>
+                         <a href="javascript:void(0);" class="dropdown-item text-danger fw-semibold"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="ti ti-logout-2 me-2 fs-17 align-middle"></i>
                             <span class="align-middle">Log Out</span>
