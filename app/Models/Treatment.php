@@ -21,6 +21,7 @@ class Treatment extends Model
         'price',
         'employee_commission',
         'description',
+        'thumbnail',
         'created_by',
         'updated_by',
     ];

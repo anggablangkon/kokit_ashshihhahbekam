@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Support\AdminMenu;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class AdminSeeder extends Seeder
 {
@@ -12,6 +16,14 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+        foreach (AdminMenu::permissionNames() as $permissionName) {
+            Permission::findOrCreate($permissionName, 'web');
+        }
+
+        $superAdmin = Role::findOrCreate('Super Admin', 'web');
+        Role::findOrCreate('Pegawai', 'web');
+        $superAdmin->syncPermissions(Permission::whereIn('name', AdminMenu::permissionNames())->get());
+
         User::updateOrCreate(
             ['email' => 'admin@btech.com'],
             [
@@ -19,6 +31,8 @@ class AdminSeeder extends Seeder
                 'password' => 'admin123',
                 'email_verified_at' => now(),
             ]
-        );
+        )->assignRole($superAdmin);
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

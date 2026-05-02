@@ -82,8 +82,8 @@
                 <div class="dropdown">
                     <a class="topbar-link dropdown-toggle drop-arrow-none px-2" data-bs-toggle="dropdown"
                         data-bs-offset="0,16" href="#!" aria-haspopup="false" aria-expanded="false">
-                        <img src="{{ asset('internal/assets/logoix.png') }}" width="32"
-                            class="rounded-circle me-lg-2 d-flex" alt="user-image">
+                        <img src="{{ Auth::user()->profile_photo_url }}" width="32" height="32"
+                            class="rounded-circle me-lg-2 d-flex" style="object-fit: cover;" alt="user-image">
                         <div class="d-lg-flex align-items-center gap-1 d-none">
                             <h5 class="my-0">{{ Auth::user()->name }}</h5>
                             <i class="ti ti-chevron-down align-middle"></i>
@@ -94,7 +94,7 @@
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
-                        <a href="#" class="dropdown-item text-black fw-semibold">
+                        <a href="{{ route('admin.profile.edit') }}" class="dropdown-item text-black fw-semibold">
                             <i class="ti ti-users me-2 fs-17 align-middle"></i>
                             <span class="align-middle">Profil</span>
                         </a>

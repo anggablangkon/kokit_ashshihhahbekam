@@ -2,6 +2,10 @@
 
 @section('title', 'Rekam Medis')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('tema/assets/plugins/select2/select2.min.css') }}">
+@endsection
+
 @section('content')
     <div class="container-fluid">
         <div class="page-title-head d-flex align-items-center justify-content-between py-2">
@@ -189,6 +193,12 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="border rounded p-3 h-100">
+                                    <span class="text-muted d-block mb-1">Nomor Invoice</span>
+                                    <div class="fw-semibold">{{ $medicalRecord->invoice_number }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 h-100">
                                     <span class="text-muted d-block mb-1">Pasien</span>
                                     <div class="fw-semibold">{{ $medicalRecord->patient_display_name }}</div>
                                 </div>
@@ -214,13 +224,36 @@
                             <div class="col-md-6">
                                 <div class="border rounded p-3 h-100">
                                     <span class="text-muted d-block mb-1">Keluhan</span>
-                                    <div class="fw-semibold">{{ $medicalRecord->complaint }}</div>
+                                    <div class="fw-semibold">{{ $medicalRecord->complaint ?: '-' }}</div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="border rounded p-3 h-100">
-                                    <span class="text-muted d-block mb-1">Tindakan</span>
-                                    <div class="fw-semibold">{{ $medicalRecord->action_details }}</div>
+                            <div class="col-12">
+                                <div class="border rounded p-3">
+                                    <span class="text-muted d-block mb-2">Detail Layanan</span>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Layanan</th>
+                                                    <th class="text-center" style="width: 80px;">Qty</th>
+                                                    <th class="text-end">Harga</th>
+                                                    <th class="text-end">Diskon</th>
+                                                    <th class="text-end">Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($medicalRecord->items as $item)
+                                                    <tr>
+                                                        <td class="fw-semibold">{{ $item->treatment_name }}</td>
+                                                        <td class="text-center">{{ $item->qty }}</td>
+                                                        <td class="text-end">Rp {{ number_format((float) $item->price, 0, ',', '.') }}</td>
+                                                        <td class="text-end">Rp {{ number_format((float) $item->discount, 0, ',', '.') }}</td>
+                                                        <td class="text-end fw-semibold">Rp {{ number_format((float) $item->subtotal, 0, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -263,6 +296,7 @@
 @endsection
 
 @push('js')
+    <script src="{{ asset('tema/assets/plugins/select2/select2.min.js') }}"></script>
     <script>
         (() => {
             const formatCurrency = (value) => {
@@ -274,6 +308,138 @@
 
                 return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             };
+
+            const parseNumber = (value) => parseFloat(String(value ?? '').replace(/[^0-9]/g, '')) || 0;
+            const formatRupiah = (value) => 'Rp ' + new Intl.NumberFormat('id-ID').format(value || 0);
+
+            const calculateRow = (row, formWrapper) => {
+                const qty = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+                const price = parseNumber(row.querySelector('.price-input')?.value);
+                const discount = parseNumber(row.querySelector('.discount-input')?.value);
+                const subtotal = Math.max(0, (qty * price) - discount);
+
+                row.querySelector('.subtotal-display').value = formatRupiah(subtotal);
+                row.querySelector('.subtotal-value').value = subtotal;
+                calculateGrandTotal(formWrapper);
+            };
+
+            const calculateGrandTotal = (formWrapper) => {
+                let total = 0;
+
+                formWrapper.querySelectorAll('.subtotal-value').forEach((input) => {
+                    total += parseFloat(input.value) || 0;
+                });
+
+                formWrapper.querySelector('.js-grand-total-text').innerText = formatRupiah(total);
+                formWrapper.querySelector('.js-grand-total-value').value = total;
+            };
+
+            const addTreatmentRow = (formWrapper) => {
+                const tbody = formWrapper.querySelector('.js-treatment-items');
+                const listId = tbody.dataset.listId;
+                const index = Date.now() + Math.floor(Math.random() * 1000);
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>
+                        <input list="${listId}" name="treatments[${index}][name]" class="form-control form-control-sm name-input" placeholder="Cari atau ketik layanan" required>
+                    </td>
+                    <td>
+                        <input type="number" name="treatments[${index}][qty]" class="form-control form-control-sm qty-input text-center" value="1" min="1">
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" name="treatments[${index}][price]" class="form-control price-input js-currency-input" placeholder="0">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" name="treatments[${index}][discount]" class="form-control discount-input js-currency-input text-danger fw-medium" placeholder="0" value="0">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm subtotal-display border-0 bg-transparent fw-bold" readonly value="Rp 0">
+                        <input type="hidden" class="subtotal-value" value="0">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-link text-danger remove-row p-0">
+                            <i class="ti ti-trash fs-lg"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.prepend(row);
+                calculateRow(row, formWrapper);
+            };
+
+            document.querySelectorAll('.js-medical-record-form').forEach((formWrapper) => {
+                const tbody = formWrapper.querySelector('.js-treatment-items');
+                const datalist = formWrapper.querySelector('datalist');
+
+                if (!tbody.children.length) {
+                    addTreatmentRow(formWrapper);
+                }
+
+                formWrapper.querySelector('.js-add-treatment-row')?.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    addTreatmentRow(formWrapper);
+                });
+
+                tbody.addEventListener('click', (event) => {
+                    const removeButton = event.target.closest('.remove-row');
+
+                    if (!removeButton) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    if (tbody.querySelectorAll('tr').length <= 1) {
+                        alert('Minimal harus ada satu item layanan.');
+                        return;
+                    }
+
+                    removeButton.closest('tr').remove();
+                    calculateGrandTotal(formWrapper);
+                });
+
+                tbody.addEventListener('input', (event) => {
+                    const row = event.target.closest('tr');
+
+                    if (!row) {
+                        return;
+                    }
+
+                    if (event.target.classList.contains('name-input')) {
+                        const selectedOption = Array.from(datalist.options).find((option) => option.value === event.target.value);
+
+                        if (selectedOption) {
+                            row.querySelector('.price-input').value = formatCurrency(selectedOption.dataset.price);
+                        }
+                    }
+
+                    if (event.target.classList.contains('js-currency-input')) {
+                        event.target.value = formatCurrency(event.target.value);
+                    }
+
+                    calculateRow(row, formWrapper);
+                });
+
+                tbody.querySelectorAll('tr').forEach((row) => calculateRow(row, formWrapper));
+            });
+
+            if (window.jQuery && jQuery.fn.select2) {
+                jQuery('.js-patient-select').each(function() {
+                    const modal = jQuery(this).closest('.modal');
+                    jQuery(this).select2({
+                        width: '100%',
+                        dropdownParent: modal.length ? modal : jQuery(document.body),
+                        placeholder: jQuery(this).data('placeholder') || 'Pilih pasien',
+                    });
+                });
+            }
 
             const context = @json(old('form_context'));
             const createContext = 'medical-records-create';
@@ -294,6 +460,10 @@
                 form.querySelectorAll('.is-invalid').forEach((field) => field.classList.remove('is-invalid'));
                 form.querySelectorAll('.js-currency-input').forEach((input) => {
                     input.value = formatCurrency(input.value);
+                });
+                form.querySelectorAll('.js-treatment-items').forEach((tbody) => {
+                    tbody.innerHTML = '';
+                    addTreatmentRow(tbody.closest('.js-medical-record-form'));
                 });
             };
 

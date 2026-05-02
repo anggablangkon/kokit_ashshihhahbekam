@@ -51,11 +51,19 @@
     </div>
 
     <div class="col-md-6 mb-3">
-        <label class="form-label">Informasi</label>
-        <div class="border rounded p-3 bg-light-subtle h-100">
-            <p class="mb-1 fw-semibold">Catatan</p>
-            <p class="mb-0 text-muted">Data pasien akan dipakai pada modul rekam medis. Pastikan nama dan nomor telepon terisi benar.</p>
-        </div>
+        <label for="{{ $fieldPrefix }}_gender" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
+        <select
+            id="{{ $fieldPrefix }}_gender"
+            name="gender"
+            class="form-select {{ $usesOldInput && $errors->has('gender') ? 'is-invalid' : '' }}"
+        >
+            <option value="">Pilih jenis kelamin</option>
+            <option value="male" @selected(($usesOldInput ? old('gender') : $currentPatient?->gender) === 'male')>Laki-laki</option>
+            <option value="female" @selected(($usesOldInput ? old('gender') : $currentPatient?->gender) === 'female')>Perempuan</option>
+        </select>
+        @if ($usesOldInput && $errors->has('gender'))
+            <div class="invalid-feedback">{{ $errors->first('gender') }}</div>
+        @endif
     </div>
 
     <div class="col-12 mb-3">

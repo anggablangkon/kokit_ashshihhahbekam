@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTreatmentRequest;
 use App\Http\Requests\Admin\UpdateTreatmentRequest;
 use App\Models\Treatment;
+use Illuminate\Support\Facades\Storage;
 
 class TreatmentController extends Controller
 {
@@ -34,10 +35,16 @@ class TreatmentController extends Controller
      */
     public function store(StoreTreatmentRequest $request)
     {
-        Treatment::create($request->validated() + [
+        $payload = $request->safe()->except('thumbnail') + [
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
-        ]);
+        ];
+
+        if ($request->hasFile('thumbnail')) {
+            $payload['thumbnail'] = $request->file('thumbnail')->store('treatments', 'public');
+        }
+
+        Treatment::create($payload);
 
         return redirect()
             ->route('treatments.index')
@@ -65,9 +72,16 @@ class TreatmentController extends Controller
      */
     public function update(UpdateTreatmentRequest $request, Treatment $treatment)
     {
-        $treatment->update($request->validated() + [
+        $payload = $request->safe()->except('thumbnail') + [
             'updated_by' => auth()->id(),
-        ]);
+        ];
+
+        if ($request->hasFile('thumbnail')) {
+            $this->deleteThumbnail($treatment->thumbnail);
+            $payload['thumbnail'] = $request->file('thumbnail')->store('treatments', 'public');
+        }
+
+        $treatment->update($payload);
 
         return redirect()
             ->route('treatments.index')
@@ -79,10 +93,18 @@ class TreatmentController extends Controller
      */
     public function destroy(Treatment $treatment)
     {
+        $this->deleteThumbnail($treatment->thumbnail);
         $treatment->delete();
 
         return redirect()
             ->route('treatments.index')
             ->with('success', 'Data treatment berhasil dihapus.');
+    }
+
+    private function deleteThumbnail(?string $path): void
+    {
+        if ($path) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

@@ -26,6 +26,7 @@ class UpdateTreatmentRequest extends FormRequest
             'price' => ['required', 'numeric', 'min:0'],
             'employee_commission' => ['required', 'numeric', 'min:0', 'lte:price'],
             'description' => ['nullable', 'string'],
+            'thumbnail' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 
@@ -47,6 +48,7 @@ class UpdateTreatmentRequest extends FormRequest
             'price' => 'harga treatment',
             'employee_commission' => 'komisi pegawai',
             'description' => 'deskripsi',
+            'thumbnail' => 'thumbnail',
         ];
     }
 
@@ -64,6 +66,9 @@ class UpdateTreatmentRequest extends FormRequest
             'employee_commission.min' => 'Komisi pegawai tidak boleh kurang dari 0.',
             'employee_commission.lte' => 'Komisi pegawai tidak boleh lebih besar dari harga treatment.',
             'description.string' => 'Deskripsi treatment harus berupa teks.',
+            'thumbnail.image' => 'Thumbnail harus berupa gambar.',
+            'thumbnail.mimes' => 'Thumbnail harus berformat jpg, jpeg, png, atau webp.',
+            'thumbnail.max' => 'Ukuran thumbnail maksimal 2MB.',
         ];
     }
 

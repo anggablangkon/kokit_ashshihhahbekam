@@ -45,6 +45,7 @@
                             <th class="ps-3" style="width: 1%;">No</th>
                             <th>Nama</th>
                             <th>Telepon</th>
+                            <th>Jenis Kelamin</th>
                             <th>Tanggal Lahir</th>
                             <th>Alamat</th>
                             <th>Rekam Medis</th>
@@ -57,6 +58,7 @@
                                 <td class="ps-3">{{ $index + 1 }}</td>
                                 <td class="fw-semibold">{{ $patient->name }}</td>
                                 <td>{{ $patient->phone ?: '-' }}</td>
+                                <td>{{ $patient->gender === 'male' ? 'Laki-laki' : ($patient->gender === 'female' ? 'Perempuan' : '-') }}</td>
                                 <td>{{ $patient->birth_date?->translatedFormat('d M Y') ?: '-' }}</td>
                                 <td>{{ \Illuminate\Support\Str::limit($patient->address ?: '-', 60) }}</td>
                                 <td>{{ $patient->medical_records_count }}</td>
@@ -80,7 +82,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">Belum ada data pasien.</td>
+                                <td colspan="8" class="text-center py-4">Belum ada data pasien.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -149,6 +151,12 @@
                                 <div class="border rounded p-3 h-100">
                                     <span class="text-muted d-block mb-1">Tanggal Lahir</span>
                                     <div class="fw-semibold">{{ $patient->birth_date?->translatedFormat('d F Y') ?: '-' }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 h-100">
+                                    <span class="text-muted d-block mb-1">Jenis Kelamin</span>
+                                    <div class="fw-semibold">{{ $patient->gender === 'male' ? 'Laki-laki' : ($patient->gender === 'female' ? 'Perempuan' : '-') }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">

@@ -41,6 +41,7 @@
                     <thead class="bg-light align-middle bg-opacity-25 thead-sm">
                         <tr class="text-uppercase fs-xxs">
                             <th class="ps-3" style="width: 1%;">No</th>
+                            <th>Thumbnail</th>
                             <th>Nama Treatment</th>
                             <th>Harga</th>
                             <th>Komisi</th>
@@ -52,6 +53,20 @@
                         @forelse ($treatments as $index => $treatment)
                             <tr>
                                 <td class="ps-3">{{ $index + 1 }}</td>
+                                <td>
+                                    @if ($treatment->thumbnail)
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($treatment->thumbnail) }}"
+                                            alt="{{ $treatment->treatment_name }}"
+                                            class="rounded border photo-zoomable"
+                                            width="56" height="42"
+                                            style="object-fit: cover; cursor: pointer;"
+                                            data-photo-src="{{ \Illuminate\Support\Facades\Storage::url($treatment->thumbnail) }}"
+                                            data-photo-name="{{ $treatment->treatment_name }}"
+                                            title="Klik untuk perbesar">
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
                                 <td class="fw-semibold">{{ $treatment->treatment_name }}</td>
                                 <td>Rp {{ number_format((float) $treatment->price, 0, ',', '.') }}</td>
                                 <td>Rp {{ number_format((float) $treatment->employee_commission, 0, ',', '.') }}</td>
@@ -80,7 +95,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4">Belum ada data treatment.</td>
+                                <td colspan="7" class="text-center py-4">Belum ada data treatment.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -96,6 +111,27 @@
         </div>
     </div>
 
+    {{-- Lightbox Modal --}}
+    <div class="modal fade" id="modalPhotoZoom" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+            <div class="modal-content border-0 bg-transparent shadow-none">
+                <div class="modal-body p-0 text-center position-relative">
+                    <button type="button"
+                        class="btn btn-dark btn-icon btn-sm rounded-circle position-absolute top-0 end-0 m-2"
+                        style="z-index: 10;"
+                        data-bs-dismiss="modal"
+                        aria-label="Tutup">
+                        <i class="ti ti-x"></i>
+                    </button>
+                    <img id="zoomedPhoto" src="" alt="" class="img-fluid rounded-3 shadow"
+                        style="max-height: 460px; object-fit: contain;">
+                    <div id="zoomedPhotoName" class="text-white fw-semibold mt-2 small"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Create --}}
     <div class="modal fade" id="modalCreateTreatment" tabindex="-1" aria-hidden="true"
         data-form-context="treatments-create">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -104,7 +140,7 @@
                     <h5 class="modal-title">Tambah Treatment</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form action="{{ route('treatments.store') }}" method="POST" autocomplete="off">
+                <form action="{{ route('treatments.store') }}" method="POST" enctype="multipart/form-data" autocomplete="off">
                     @csrf
                     <input type="hidden" name="form_context" value="treatments-create">
                     <div class="modal-body">
@@ -125,6 +161,7 @@
     </div>
 
     @foreach ($treatments as $treatment)
+        {{-- Modal Show --}}
         <div class="modal fade" id="modalShowTreatment{{ $treatment->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
@@ -134,20 +171,37 @@
                     </div>
                     <div class="modal-body">
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div class="border rounded p-3 h-100 text-center">
+                                    <span class="text-muted d-block mb-2">Thumbnail</span>
+                                    @if ($treatment->thumbnail)
+                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($treatment->thumbnail) }}"
+                                            alt="{{ $treatment->treatment_name }}"
+                                            class="rounded border photo-zoomable"
+                                            width="140" height="96"
+                                            style="object-fit: cover; cursor: pointer;"
+                                            data-photo-src="{{ \Illuminate\Support\Facades\Storage::url($treatment->thumbnail) }}"
+                                            data-photo-name="{{ $treatment->treatment_name }}"
+                                            title="Klik untuk perbesar">
+                                    @else
+                                        <div class="text-muted fw-semibold">-</div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-md-8">
                                 <div class="border rounded p-3 h-100">
                                     <span class="text-muted d-block mb-1">Nama Treatment</span>
                                     <div class="fw-semibold">{{ $treatment->treatment_name }}</div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="border rounded p-3 h-100">
                                     <span class="text-muted d-block mb-1">Harga</span>
                                     <div class="fw-semibold">Rp
                                         {{ number_format((float) $treatment->price, 0, ',', '.') }}</div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="border rounded p-3 h-100">
                                     <span class="text-muted d-block mb-1">Komisi</span>
                                     <div class="fw-semibold">Rp
@@ -169,6 +223,7 @@
             </div>
         </div>
 
+        {{-- Modal Edit --}}
         <div class="modal fade" id="modalEditTreatment{{ $treatment->id }}" tabindex="-1" aria-hidden="true"
             data-form-context="treatments-edit-{{ $treatment->id }}">
             <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -177,7 +232,7 @@
                         <h5 class="modal-title">Edit Treatment</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
-                    <form action="{{ route('treatments.update', $treatment) }}" method="POST" autocomplete="off">
+                    <form action="{{ route('treatments.update', $treatment) }}" method="POST" enctype="multipart/form-data" autocomplete="off">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="form_context" value="treatments-edit-{{ $treatment->id }}">
@@ -207,34 +262,7 @@
         (() => {
             const formatCurrency = (value) => {
                 const digits = String(value ?? '').replace(/\D/g, '');
-
-                if (!digits) {
-                    return '';
-                }
-
-                return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            };
-
-            const context = @json(old('form_context'));
-            const createContext = 'treatments-create';
-            const createModal = document.getElementById('modalCreateTreatment');
-
-            const resetCreateForm = () => {
-                if (!createModal) {
-                    return;
-                }
-
-                const form = createModal.querySelector('form');
-
-                if (!form) {
-                    return;
-                }
-
-                form.reset();
-                form.querySelectorAll('.is-invalid').forEach((field) => field.classList.remove('is-invalid'));
-                form.querySelectorAll('.js-currency-input').forEach((input) => {
-                    input.value = formatCurrency(input.value);
-                });
+                return digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
             };
 
             document.querySelectorAll('.js-currency-input').forEach((input) => {
@@ -244,27 +272,106 @@
                 });
             });
 
+            const context       = @json(old('form_context'));
+            const createContext = 'treatments-create';
+            const createModal   = document.getElementById('modalCreateTreatment');
+
+            const resetCreateForm = () => {
+                if (!createModal) return;
+                const form = createModal.querySelector('form');
+                if (!form) return;
+                form.reset();
+                form.querySelectorAll('.is-invalid').forEach((f) => f.classList.remove('is-invalid'));
+                form.querySelectorAll('.js-currency-input').forEach((input) => {
+                    input.value = formatCurrency(input.value);
+                });
+                const wrapper = form.querySelector('[id$="_thumb_preview_wrapper"]');
+                if (wrapper) wrapper.classList.add('d-none');
+            };
+
             if (createModal) {
                 createModal.addEventListener('show.bs.modal', () => {
-                    if (context !== createContext) {
-                        resetCreateForm();
-                    }
+                    if (context !== createContext) resetCreateForm();
                 });
-
                 createModal.addEventListener('hidden.bs.modal', () => {
-                    if (context !== createContext) {
-                        resetCreateForm();
-                    }
+                    if (context !== createContext) resetCreateForm();
                 });
             }
 
             if (context && typeof bootstrap !== 'undefined') {
-                const modalElement = document.querySelector(`[data-form-context="${context}"]`);
-
-                if (modalElement) {
-                    bootstrap.Modal.getOrCreateInstance(modalElement).show();
-                }
+                const modalEl = document.querySelector(`[data-form-context="${context}"]`);
+                if (modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
             }
+
+            const zoomModal   = document.getElementById('modalPhotoZoom');
+            const zoomedPhoto = document.getElementById('zoomedPhoto');
+            const zoomedName  = document.getElementById('zoomedPhotoName');
+
+            document.addEventListener('click', (e) => {
+                const img = e.target.closest('.photo-zoomable');
+                if (!img) return;
+
+                e.stopPropagation();
+
+                const openLightbox = () => {
+                    zoomedPhoto.src        = img.dataset.photoSrc;
+                    zoomedPhoto.alt        = img.dataset.photoName;
+                    zoomedName.textContent = img.dataset.photoName;
+                    bootstrap.Modal.getOrCreateInstance(zoomModal).show();
+                };
+
+                const parentModal = img.closest('.modal');
+                if (parentModal) {
+                    bootstrap.Modal.getInstance(parentModal)?.hide();
+                    parentModal.addEventListener('hidden.bs.modal', openLightbox, { once: true });
+                } else {
+                    openLightbox();
+                }
+            });
         })();
+
+        function treatmentPreviewPhoto(input, prefix) {
+            const file    = input.files[0];
+            const wrapper = document.getElementById(prefix + '_thumb_preview_wrapper');
+            const preview = document.getElementById(prefix + '_thumb_preview');
+            const nameEl  = document.getElementById(prefix + '_thumb_name');
+
+            if (!file) return;
+
+            const reader  = new FileReader();
+            reader.onload = (e) => {
+                preview.src                  = e.target.result;
+                preview.dataset.photoSrc     = e.target.result;
+                preview.dataset.photoName    = file.name;
+                nameEl.textContent           = file.name;
+                wrapper.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function treatmentZoomPreview(img) {
+            if (!img.dataset.photoSrc) return;
+
+            const zoomModal   = document.getElementById('modalPhotoZoom');
+            const zoomedPhoto = document.getElementById('zoomedPhoto');
+            const zoomedName  = document.getElementById('zoomedPhotoName');
+
+            zoomedPhoto.src        = img.dataset.photoSrc;
+            zoomedPhoto.alt        = img.dataset.photoName;
+            zoomedName.textContent = img.dataset.photoName;
+            bootstrap.Modal.getOrCreateInstance(zoomModal).show();
+        }
+
+        function treatmentClearPhoto(prefix) {
+            const input   = document.getElementById(prefix + '_thumbnail');
+            const preview = document.getElementById(prefix + '_thumb_preview');
+            const wrapper = document.getElementById(prefix + '_thumb_preview_wrapper');
+            const nameEl  = document.getElementById(prefix + '_thumb_name');
+
+            if (input)   input.value            = '';
+            if (preview) { preview.src = ''; preview.dataset.photoSrc = ''; }
+            if (nameEl)  nameEl.textContent      = '';
+            if (wrapper) wrapper.classList.add('d-none');
+        }
     </script>
 @endpush

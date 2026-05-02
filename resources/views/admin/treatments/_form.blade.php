@@ -66,4 +66,53 @@
             <div class="invalid-feedback">{{ $errors->first('description') }}</div>
         @endif
     </div>
+
+    <div class="col-12 mb-3">
+        <label for="{{ $fieldPrefix }}_thumbnail" class="form-label">
+            Thumbnail
+            @if (!$currentTreatment)
+                <span class="text-danger">*</span>
+            @endif
+        </label>
+        <input
+            type="file"
+            id="{{ $fieldPrefix }}_thumbnail"
+            name="thumbnail"
+            class="form-control {{ $usesOldInput && $errors->has('thumbnail') ? 'is-invalid' : '' }}"
+            accept="image/png,image/jpeg,image/webp"
+            onchange="treatmentPreviewPhoto(this, '{{ $fieldPrefix }}')"
+        >
+        @if ($usesOldInput && $errors->has('thumbnail'))
+            <div class="invalid-feedback d-block">{{ $errors->first('thumbnail') }}</div>
+        @endif
+
+        {{-- Preview Area --}}
+        <div id="{{ $fieldPrefix }}_thumb_preview_wrapper"
+            class="mt-2 {{ $currentTreatment?->thumbnail ? '' : 'd-none' }}">
+            <div class="d-flex align-items-center gap-3 p-2 border rounded bg-light">
+                <img
+                    id="{{ $fieldPrefix }}_thumb_preview"
+                    src="{{ $currentTreatment?->thumbnail ? \Illuminate\Support\Facades\Storage::url($currentTreatment->thumbnail) : '' }}"
+                    alt="Preview thumbnail"
+                    class="rounded border"
+                    width="80" height="60"
+                    style="object-fit: cover; flex-shrink: 0; cursor: zoom-in;"
+                    data-photo-src="{{ $currentTreatment?->thumbnail ? \Illuminate\Support\Facades\Storage::url($currentTreatment->thumbnail) : '' }}"
+                    data-photo-name="{{ $currentTreatment?->treatment_name ?? 'Thumbnail' }}"
+                    onclick="treatmentZoomPreview(this)">
+                <div class="flex-grow-1 overflow-hidden">
+                    <div id="{{ $fieldPrefix }}_thumb_name" class="small fw-semibold text-truncate">
+                        {{ $currentTreatment?->thumbnail ? basename($currentTreatment->thumbnail) : '' }}
+                    </div>
+                    <div class="small text-muted">Thumbnail treatment</div>
+                </div>
+                <button type="button"
+                    class="btn btn-sm btn-outline-danger rounded-circle p-1 lh-1"
+                    onclick="treatmentClearPhoto('{{ $fieldPrefix }}')"
+                    title="Hapus pilihan">
+                    <i class="ti ti-x" style="font-size: 12px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreMedicalRecordRequest;
 use App\Http\Requests\Admin\UpdateMedicalRecordRequest;
 use App\Models\MedicalRecord;
-use App\Models\MedicalRecordItem;
 use App\Models\Patient;
 use App\Models\Treatment;
 use App\Models\User;
@@ -61,44 +60,7 @@ class MedicalRecordController extends Controller
 
         try {
             DB::transaction(function () use ($validated) {
-                // 1. Simpan Header
-                $medicalRecord = MedicalRecord::create([
-                    'patient_id'     => $validated['patient_id'],
-                    'employee_id'    => $validated['employee_id'],
-                    'treatment_date' => $validated['treatment_date'],
-                    'complaint'      => $validated['complaint'],
-                    'total_cost'     => $validated['total_cost'],
-                    'created_by'     => auth()->id(),
-                    'updated_by'     => auth()->id(),
-                ]);
-
-                // 2. Simpan Detail Items
-                foreach ($validated['treatments'] as $item) {
-                    // Bersihkan spasi dari input nama
-                    $originalName = trim($item['name']);
-                    $searchName = strtolower($originalName);
-
-                    // Cari di database dengan mengabaikan besar/kecil huruf
-                    $treatment = \App\Models\Treatment::whereRaw('LOWER(treatment_name) = ?', [$searchName])->first();
-
-                    $medicalRecord->items()->create([
-                        // Jika ditemukan, isi ID-nya. Jika tidak ada di tabel treatment, biarkan null
-                        'treatment_id'   => $treatment ? $treatment->id : null, 
-                        
-                        // Tetap simpan nama dari input agar data item rekam medis tidak kosong
-                        'treatment_name' => $originalName,
-                        
-                        'qty'            => $item['qty'],
-                        'price'          => $item['price'],
-                        
-                        // Ambil komisi dari database jika ditemukan, jika tidak (manual input) beri 0
-                        'commission'     => $treatment ? $treatment->employee_commission : 0,
-                        
-                        'discount'       => $item['discount'],
-                        'subtotal'       => ($item['qty'] * $item['price']) - $item['discount'],
-                        'created_by'     => auth()->id(),
-                    ]);
-                }
+                $this->saveMedicalRecord(null, $validated);
             });
 
             return redirect()
@@ -132,9 +94,9 @@ class MedicalRecordController extends Controller
      */
     public function update(UpdateMedicalRecordRequest $request, MedicalRecord $medicalRecord)
     {
-        $medicalRecord->update($this->payload($request->validated()) + [
-            'updated_by' => auth()->id(),
-        ]);
+        DB::transaction(function () use ($medicalRecord, $request) {
+            $this->saveMedicalRecord($medicalRecord, $request->validated());
+        });
 
         return redirect()
             ->route('medical-records.index')
@@ -159,7 +121,7 @@ class MedicalRecordController extends Controller
     private function formData(): array
     {
         return [
-            'patients' => Patient::query()->orderBy('name')->get(['id', 'name']),
+            'patients' => Patient::query()->orderBy('name')->get(['id', 'name', 'phone']),
             'employees' => User::query()->orderBy('name')->get(['id', 'name']),
         ];
     }
@@ -168,15 +130,46 @@ class MedicalRecordController extends Controller
      * @param  array<string, mixed>  $validated
      * @return array<string, mixed>
      */
-    private function payload(array $validated): array
+    private function saveMedicalRecord(?MedicalRecord $medicalRecord, array $validated): MedicalRecord
     {
-        $patient = Patient::withTrashed()->find($validated['patient_id']);
-        $employee = User::find($validated['employee_id']);
+        $payload = [
+            'patient_id' => $validated['patient_id'],
+            'employee_id' => $validated['employee_id'],
+            'treatment_date' => $validated['treatment_date'],
+            'complaint' => $validated['complaint'] ?? null,
+            'total_cost' => $validated['total_cost'],
+            'updated_by' => auth()->id(),
+        ];
 
-        $validated['patient_name'] = $patient?->name;
-        $validated['employee_name'] = $employee?->name;
+        if ($medicalRecord) {
+            $medicalRecord->update($payload);
+            $medicalRecord->items()->delete();
+        } else {
+            $medicalRecord = MedicalRecord::create($payload + [
+                'created_by' => auth()->id(),
+            ]);
+        }
 
-        return $validated;
+        foreach ($validated['treatments'] as $item) {
+            $originalName = trim($item['name']);
+            $searchName = strtolower($originalName);
+            $treatment = Treatment::whereRaw('LOWER(treatment_name) = ?', [$searchName])->first();
+            $discount = $item['discount'] ?? 0;
+            $subtotal = max(0, ($item['qty'] * $item['price']) - $discount);
+
+            $medicalRecord->items()->create([
+                'treatment_id' => $treatment?->id,
+                'treatment_name' => $originalName,
+                'qty' => $item['qty'],
+                'price' => $item['price'],
+                'commission' => $treatment?->employee_commission ?? 0,
+                'discount' => $discount,
+                'subtotal' => $subtotal,
+                'created_by' => auth()->id(),
+            ]);
+        }
+
+        return $medicalRecord;
     }
 
     public function downloadInvoice($id)

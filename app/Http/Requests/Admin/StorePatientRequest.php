@@ -24,6 +24,7 @@ class StorePatientRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:150'],
             'phone' => ['required', 'digits_between:8,20'],
+            'gender' => ['required', 'in:male,female'],
             'address' => ['nullable', 'string'],
             'birth_date' => ['required', 'date', 'before_or_equal:today'],
         ];
@@ -46,6 +47,7 @@ class StorePatientRequest extends FormRequest
         return [
             'name' => 'nama pasien',
             'phone' => 'nomor telepon',
+            'gender' => 'jenis kelamin',
             'address' => 'alamat',
             'birth_date' => 'tanggal lahir',
         ];
@@ -59,6 +61,8 @@ class StorePatientRequest extends FormRequest
             'name.max' => 'Nama pasien maksimal 150 karakter.',
             'phone.required' => 'Nomor telepon wajib diisi.',
             'phone.digits_between' => 'Nomor telepon harus berisi 8 sampai 20 digit angka.',
+            'gender.required' => 'Jenis kelamin wajib dipilih.',
+            'gender.in' => 'Jenis kelamin yang dipilih tidak valid.',
             'address.string' => 'Alamat harus berupa teks yang valid.',
             'birth_date.required' => 'Tanggal lahir wajib diisi.',
             'birth_date.date' => 'Tanggal lahir harus berupa tanggal yang valid.',
