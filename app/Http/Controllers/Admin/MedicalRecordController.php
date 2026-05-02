@@ -72,19 +72,28 @@ class MedicalRecordController extends Controller
                     'updated_by'     => auth()->id(),
                 ]);
 
-                // 2. Simpan Detail Items dengan Mengambil Komisi dari Tabel Treatments
+                // 2. Simpan Detail Items
                 foreach ($validated['treatments'] as $item) {
-                    // CARI DATA TREATMENT UNTUK MENGAMBIL KOMISI
-                    // Kita asumsikan input 'name' sesuai dengan nama di table treatment 
-                    // atau jika Anda punya ID di input, lebih baik gunakan ID.
-                    $treatment = \App\Models\Treatment::where('treatment_name', $item['name'])->first();
+                    // Bersihkan spasi dari input nama
+                    $originalName = trim($item['name']);
+                    $searchName = strtolower($originalName);
+
+                    // Cari di database dengan mengabaikan besar/kecil huruf
+                    $treatment = \App\Models\Treatment::whereRaw('LOWER(treatment_name) = ?', [$searchName])->first();
 
                     $medicalRecord->items()->create([
-                        'treatment_id'   => $treatment?->id, // Menyimpan ID referensi
-                        'treatment_name' => $item['name'],
+                        // Jika ditemukan, isi ID-nya. Jika tidak ada di tabel treatment, biarkan null
+                        'treatment_id'   => $treatment ? $treatment->id : null, 
+                        
+                        // Tetap simpan nama dari input agar data item rekam medis tidak kosong
+                        'treatment_name' => $originalName,
+                        
                         'qty'            => $item['qty'],
                         'price'          => $item['price'],
-                        'commission'     => $treatment?->employee_commission ?? 0, // MENGAMBIL KOMISI DARI DB
+                        
+                        // Ambil komisi dari database jika ditemukan, jika tidak (manual input) beri 0
+                        'commission'     => $treatment ? $treatment->employee_commission : 0,
+                        
                         'discount'       => $item['discount'],
                         'subtotal'       => ($item['qty'] * $item['price']) - $item['discount'],
                         'created_by'     => auth()->id(),
@@ -102,7 +111,6 @@ class MedicalRecordController extends Controller
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-
     /**
      * Display the specified resource.
      */
