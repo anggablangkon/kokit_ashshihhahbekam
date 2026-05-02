@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Invoice #{{ $medicalRecord->id }}</title>
+    <title>Invoice #{{ $medicalRecord->invoice_number }}</title>
     <style>
         body { font-family: sans-serif; line-height: 1.5; color: #333; }
         .invoice-box { max-width: 800px; margin: auto; padding: 30px; }

@@ -17,6 +17,7 @@ class MedicalRecordItem extends Model
         'qty',
         'price',
         'discount',
+        'commission',
         'subtotal',
         'created_by',
     ];

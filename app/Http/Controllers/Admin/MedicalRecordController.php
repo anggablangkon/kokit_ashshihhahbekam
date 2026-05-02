@@ -72,12 +72,19 @@ class MedicalRecordController extends Controller
                     'updated_by'     => auth()->id(),
                 ]);
 
-                // 2. Simpan Detail Items
+                // 2. Simpan Detail Items dengan Mengambil Komisi dari Tabel Treatments
                 foreach ($validated['treatments'] as $item) {
+                    // CARI DATA TREATMENT UNTUK MENGAMBIL KOMISI
+                    // Kita asumsikan input 'name' sesuai dengan nama di table treatment 
+                    // atau jika Anda punya ID di input, lebih baik gunakan ID.
+                    $treatment = \App\Models\Treatment::where('treatment_name', $item['name'])->first();
+
                     $medicalRecord->items()->create([
+                        'treatment_id'   => $treatment?->id, // Menyimpan ID referensi
                         'treatment_name' => $item['name'],
                         'qty'            => $item['qty'],
                         'price'          => $item['price'],
+                        'commission'     => $treatment?->employee_commission ?? 0, // MENGAMBIL KOMISI DARI DB
                         'discount'       => $item['discount'],
                         'subtotal'       => ($item['qty'] * $item['price']) - $item['discount'],
                         'created_by'     => auth()->id(),
