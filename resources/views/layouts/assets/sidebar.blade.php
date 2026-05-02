@@ -86,7 +86,7 @@
                 <li class="side-nav-item">
                     <a href="{{ route('payrolls.index') }}" class="side-nav-link">
                         <span class="menu-icon"><i class="ti ti-report-money"></i></span>
-                        <span class="menu-text">Payroll</span>
+                        <span class="menu-text">Penggajian</span>
                     </a>
                 </li>
             </ul>

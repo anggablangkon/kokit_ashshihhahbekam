@@ -34,6 +34,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::resource('medical-records', MedicalRecordController::class)->parameters([
         'medical-records' => 'medicalRecord',
     ])->except(['create', 'edit', 'show']);
+    Route::get('medical-records/{id}/invoice', [MedicalRecordController::class, 'downloadInvoice'])
+    ->name('medical-records.invoice');
     Route::resource('payrolls', PayrollController::class)->except(['create', 'edit', 'show']);
 });
 

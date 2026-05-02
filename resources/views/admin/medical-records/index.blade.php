@@ -39,37 +39,90 @@
             <div class="table-responsive">
                 <table class="table table-custom table-centered table-hover w-100 mb-0">
                     <thead class="bg-light align-middle bg-opacity-25 thead-sm">
-                        <tr class="text-uppercase fs-xxs">
-                            <th class="ps-3" style="width: 1%;">No</th>
-                            <th>Tanggal</th>
-                            <th>Pasien</th>
-                            <th>Pegawai</th>
-                            <th>Keluhan</th>
-                            <th>Total Biaya</th>
-                            <th class="text-center" style="width: 1%;">Aksi</th>
+                       <tr class="text-uppercase fs-xxs">
+                            <th class="ps-3 text-center" style="width: 5%;">No</th>
+                            <th style="width: 15%;">Tanggal & Waktu</th>
+                            <th style="width: 20%;">Pasien & Pegawai</th>
+                            <th style="width: 20%;">Layanan / Treatment</th> <!-- Kolom Baru/Penyesuaian -->
+                            <th style="width: 20%;">Keluhan</th>
+                            <th style="width: 10%;">Total Biaya</th>
+                            <th class="text-center" style="width: 10%;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($medicalRecords as $index => $medicalRecord)
                             <tr>
-                                <td class="ps-3">{{ $index + 1 }}</td>
-                                <td>{{ $medicalRecord->treatment_date?->translatedFormat('d M Y') }}</td>
-                                <td class="fw-semibold">{{ $medicalRecord->patient_display_name }}</td>
-                                <td>{{ $medicalRecord->employee_display_name }}</td>
-                                <td>{{ \Illuminate\Support\Str::limit($medicalRecord->complaint ?: '-', 60) }}</td>
-                                <td>Rp {{ number_format((float) $medicalRecord->total_cost, 0, ',', '.') }}</td>
+                                <td class="ps-3 text-center">{{ $index + 1 }}</td>
+                                <td>
+                                    <span class="fw-bold text-dark">{{ $medicalRecord->invoice_number }}</span>
+                                    <span class="d-block fw-semibold">{{ $medicalRecord->treatment_date?->translatedFormat('d M Y') }}</span>
+                                    <small class="text-muted">{{ $medicalRecord->created_at->format('H:i') }} WIB</small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary">{{ $medicalRecord->patient_display_name }}</div>
+                                    <small class="text-muted">Terapis: {{ $medicalRecord->employee_display_name }}</small>
+                                </td>
+                                <td>
+                                    <!-- Menampilkan ringkasan item layanan + Harga Satuan -->
+                                    <ul class="list-unstyled mb-0 small">
+                                        @foreach($medicalRecord->items->take(3) as $item)
+                                            <li class="mb-1">
+                                                <i class="ti ti-check text-success me-1"></i>
+                                                <span class="fw-medium">{{ $item->treatment_name }}</span>
+                                                <div class="text-muted ps-3 fw-medium ">
+                                                    {{ $item->qty }} x Rp {{ number_format($item->price, 0, ',', '.') }}
+                                                    @if($item->discount > 0)
+                                                        <span class="text-danger">(-Rp {{ number_format($item->discount, 0, ',', '.') }})</span>
+                                                    @endif
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                        
+                                        @if($medicalRecord->items->count() > 3)
+                                            <li class="text-muted small ms-3 italic">
+                                                + {{ $medicalRecord->items->count() - 3 }} layanan lainnya...
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate" style="max-width: 150px;" title="{{ $medicalRecord->complaint }}">
+                                        {{ $medicalRecord->complaint ?: '-' }}
+                                    </span>
+                                </td>
+                                <td class="fw-bold text-dark">
+                                    Rp {{ number_format((float) $medicalRecord->total_cost, 0, ',', '.') }}
+                                </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-1">
-                                        <button type="button" class="btn btn-soft-info btn-icon btn-sm rounded-circle" data-bs-toggle="modal" data-bs-target="#modalShowMedicalRecord{{ $medicalRecord->id }}">
+                                        <!-- Tombol Cetak Invoice (Baru) -->
+                                        <a href="{{ route('medical-records.invoice', $medicalRecord->id) }}" 
+                                        class="btn btn-soft-success btn-icon btn-sm rounded-circle" 
+                                        target="_blank" 
+                                        title="Cetak Invoice">
+                                            <i class="ti ti-printer fs-lg"></i>
+                                        </a>
+
+                                        <!-- Tombol Detail -->
+                                        <button type="button" class="btn btn-soft-info btn-icon btn-sm rounded-circle" 
+                                                data-bs-toggle="modal" data-bs-target="#modalShowMedicalRecord{{ $medicalRecord->id }}"
+                                                title="Lihat Detail">
                                             <i class="ti ti-eye fs-lg"></i>
                                         </button>
-                                        <button type="button" class="btn btn-soft-warning btn-icon btn-sm rounded-circle" data-bs-toggle="modal" data-bs-target="#modalEditMedicalRecord{{ $medicalRecord->id }}">
+
+                                        <!-- Tombol Edit -->
+                                        <button type="button" class="btn btn-soft-warning btn-icon btn-sm rounded-circle" 
+                                                data-bs-toggle="modal" data-bs-target="#modalEditMedicalRecord{{ $medicalRecord->id }}"
+                                                title="Edit Data">
                                             <i class="ti ti-edit fs-lg"></i>
                                         </button>
-                                        <form action="{{ route('medical-records.destroy', $medicalRecord) }}" method="POST" onsubmit="return confirm('Hapus rekam medis ini?')">
+
+                                        <!-- Tombol Hapus -->
+                                        <form action="{{ route('medical-records.destroy', $medicalRecord) }}" method="POST" 
+                                            onsubmit="return confirm('Hapus rekam medis ini? Semua detail layanan juga akan terhapus.')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-soft-danger btn-icon btn-sm rounded-circle">
+                                            <button type="submit" class="btn btn-soft-danger btn-icon btn-sm rounded-circle" title="Hapus">
                                                 <i class="ti ti-trash fs-lg"></i>
                                             </button>
                                         </form>
@@ -78,7 +131,10 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4">Belum ada data rekam medis.</td>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="ti ti-database-off fs-1 d-block mb-2 text-muted"></i>
+                                    Belum ada data rekam medis.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
